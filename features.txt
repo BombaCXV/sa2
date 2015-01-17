@@ -1,0 +1,22 @@
+Features
+========
+-Alle Features sind Anteile von Wörtern mit bestimmtem Sentiment-Wert
+-Zu evaluieren ist, welche Genauigkeit bei der Klassifikation der Wörter in Sentiment-Wertklassen angewandt wird, da bei geringer Genauigkeit wenig Klassen mit viel Wörtern entstehen (Overfitting)
+ bei hoher Genauigkeit aber viele Klassen mit wenig oder nur einem Wort (Underfitting)
+-Beispiel für Abstufungsklassen
+	A: 0 1 2 3 4
+	B: 0.0 0.1 ... 3.9 4.0
+	C: 0.000 0.001 ... 3.999 4.000
+
+Nun muss überlegt werden, nach welchen Kriterien Wörter für die einzelnen Featuregruppen gewählt werden.
+Als Basis-Featuresatz kann die Klassifizierung aller Wörter im Satz dienen, ohne Filterung von Wörtern.
+Für weitere Featuresätze können die Wörter nach bestimmten Kritieren gefiltert werden.
+- Adjektive
+- NE (Großgeschriebene Wörter innerhalb des Satzes)
+- Vielleicht die zugehörigen Gegenmengen?
+
+all-A-0	all-A-1	all-A-2	all-A-3	all-A-4 all-B-0.0 all-B-0.1 all-B-0.2 ... all-B-3.8 all-B-3.9 all-B-4.0
+Adv-A-0 Adv-A ...
+NE-A-0 
+nNE-A-0
+nAdv-A-0
