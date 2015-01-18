@@ -2,7 +2,7 @@ def general(sentence = "header", accuracy = 4, dictionary = {}): #USES ALL WORDS
 	feature_prefix = "all"
 	if sentence == "header":
 		#output header @ATTRIBUTE line
-		return True
+		return [feature_prefix+"-"+str(accuracy)+"-"+str(room) for room in range(accuracy+1)]
 	else:
 		#create dictionary of features for the given sentence
 		#Dictionary values are floating point numbers from 0-4. Those values get divided with 4, so we get a scale from 0-1 which gets multiplied with the accuracy and then rounded to whole numbers.
@@ -24,13 +24,15 @@ def general(sentence = "header", accuracy = 4, dictionary = {}): #USES ALL WORDS
 				num_ct_words += 1
 				sentiment = int(round(accuracy * sentiment_c))
 				parts[sentiment] += 1
-		return {feature_prefix+"-"+str(accuracy)+"-"+str(room): parts[room]/float(num_ct_words) for room in range(len(parts))}
+		if num_ct_words:
+			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): parts[room]/float(num_ct_words) for room in range(accuracy+1)}
+		else:
+			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): "0" for room in range(accuracy+1)}
 		
 def onlyknown(sentence = "header", accuracy = 4, dictionary = {}): #USES ALL WORDS
 	feature_prefix = "known"
 	if sentence == "header":
-		#output header @ATTRIBUTE line
-		return True
+		return [feature_prefix+"-"+str(accuracy)+"-"+str(room) for room in range(accuracy+1)]
 	else:
 		parts = [0 for x in range(accuracy+1)]
 		num_ct_words = 0
@@ -42,15 +44,37 @@ def onlyknown(sentence = "header", accuracy = 4, dictionary = {}): #USES ALL WOR
 				else:
 					parts[int(round(accuracy * 0.5))] += 1
 				num_ct_words += 1
-		return {feature_prefix+"-"+str(accuracy)+"-"+str(room): parts[room]/float(num_ct_words) for room in range(len(parts))}
-				
+		if num_ct_words:
+			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): parts[room]/float(num_ct_words) for room in range(accuracy+1)}
+		else:
+			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): "0" for room in range(accuracy+1)}
+			
+def ignore2(sentence = "header", accuracy = 4, dictionary = {}): #USES ALL WORDS
+	feature_prefix = "no2"
+	if sentence == "header":
+		return [feature_prefix+"-"+str(accuracy)+"-"+str(room) for room in range(accuracy+1)]
+	else:
+		parts = [0 for x in range(accuracy+1)]
+		num_ct_words = 0
+		for word_c in sentence:
+			word, pos = word_c
+			if (word in dictionary and int(round(dictionary[word])) != 2): 
+				if word in dictionary: 
+					parts[int(round(accuracy * dictionary[word]/4.0))] += 1
+				else:
+					parts[int(round(accuracy * 0.5))] += 1
+				num_ct_words += 1
+		if num_ct_words:
+			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): parts[room]/float(num_ct_words) for room in range(accuracy+1)}
+		else:
+			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): "0" for room in range(accuracy+1)}
+			
 def onlyjj(sentence = "header", accuracy = 4, dictionary = {}): #ONLY JJ (Adjectives)
 	feature_prefix = "jj"
 	if sentence == "header":
-		#
-		return True
+		return [feature_prefix+"-"+str(accuracy)+"-"+str(room) for room in range(accuracy+1)]
 	else:
-		parts = [1 for x in range(accuracy+1)]
+		parts = [0 for x in range(accuracy+1)]
 		num_ct_words = 0
 		for word_c in sentence:
 			word = word_c[0]
@@ -61,4 +85,7 @@ def onlyjj(sentence = "header", accuracy = 4, dictionary = {}): #ONLY JJ (Adject
 				else:
 					parts[int(round(accuracy * 0.5))] += 1
 				num_ct_words += 1
-		return {feature_prefix+"-"+str(accuracy)+"-"+str(room): parts[room]/float(num_ct_words) for room in range(len(parts))}
+		if num_ct_words:
+			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): parts[room]/float(num_ct_words) for room in range(accuracy+1)}
+		else:
+			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): "0" for room in range(accuracy+1)}
