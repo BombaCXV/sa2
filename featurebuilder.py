@@ -1,91 +1,40 @@
-def general(sentence = "header", accuracy = 4, dictionary = {}): #USES ALL WORDS
-	feature_prefix = "all"
-	if sentence == "header":
-		#output header @ATTRIBUTE line
-		return [feature_prefix+"-"+str(accuracy)+"-"+str(room) for room in range(accuracy+1)]
-	else:
-		#create dictionary of features for the given sentence
-		#Dictionary values are floating point numbers from 0-4. Those values get divided with 4, so we get a scale from 0-1 which gets multiplied with the accuracy and then rounded to whole numbers.
-		#Those whole numbers are building features, describing the percentage of this sentiment value under all words in the set. 		
-		#Example: 
-		#Senctence: ["3", [["Birthday", "NN"], ["Girl", "NNP"], ["is", "VBZ"], ["an", "DT"], ["amusing", "JJ"], ["joy", "NN"], ["ride", "NN"], [".", "."]]]
-		#Accuracy: 4
-		#Output: {"class": 3, "all-4-0": 0.453, "all-4-1": 0.454 ...}
-		parts = [0 for x in range(accuracy+1)]
-		num_ct_words = 0
-		for word_c in sentence:
-			word = word_c[0]
-			pos = word_c[1]
-			if (True): #here we can make distinctions between pos or else, so that not every word gets counted
-				if word in dictionary: #if word is not in dictionary we assume 2 as sentiment. if those words should not appear get rid of them one line above
-					sentiment_c = dictionary[word]/4.0
-				else:
-					sentiment_c = 0.5
-				num_ct_words += 1
-				sentiment = int(round(accuracy * sentiment_c))
-				parts[sentiment] += 1
-		if num_ct_words:
-			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): parts[room]/float(num_ct_words) for room in range(accuracy+1)}
-		else:
-			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): "0" for room in range(accuracy+1)}
-		
-def onlyknown(sentence = "header", accuracy = 4, dictionary = {}): #USES ALL WORDS
-	feature_prefix = "known"
-	if sentence == "header":
-		return [feature_prefix+"-"+str(accuracy)+"-"+str(room) for room in range(accuracy+1)]
-	else:
-		parts = [0 for x in range(accuracy+1)]
-		num_ct_words = 0
-		for word_c in sentence:
-			word, pos = word_c
-			if (word in dictionary): 
-				if word in dictionary: 
-					parts[int(round(accuracy * dictionary[word]/4.0))] += 1
-				else:
-					parts[int(round(accuracy * 0.5))] += 1
-				num_ct_words += 1
-		if num_ct_words:
-			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): parts[room]/float(num_ct_words) for room in range(accuracy+1)}
-		else:
-			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): "0" for room in range(accuracy+1)}
-			
-def ignore2(sentence = "header", accuracy = 4, dictionary = {}): #USES ALL WORDS
-	feature_prefix = "no2"
-	if sentence == "header":
-		return [feature_prefix+"-"+str(accuracy)+"-"+str(room) for room in range(accuracy+1)]
-	else:
-		parts = [0 for x in range(accuracy+1)]
-		num_ct_words = 0
-		for word_c in sentence:
-			word, pos = word_c
-			if (word in dictionary and int(round(dictionary[word])) != 2): 
-				if word in dictionary: 
-					parts[int(round(accuracy * dictionary[word]/4.0))] += 1
-				else:
-					parts[int(round(accuracy * 0.5))] += 1
-				num_ct_words += 1
-		if num_ct_words:
-			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): parts[room]/float(num_ct_words) for room in range(accuracy+1)}
-		else:
-			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): "0" for room in range(accuracy+1)}
-			
-def onlyjj(sentence = "header", accuracy = 4, dictionary = {}): #ONLY JJ (Adjectives)
-	feature_prefix = "jj"
-	if sentence == "header":
-		return [feature_prefix+"-"+str(accuracy)+"-"+str(room) for room in range(accuracy+1)]
-	else:
-		parts = [0 for x in range(accuracy+1)]
-		num_ct_words = 0
-		for word_c in sentence:
-			word = word_c[0]
-			pos = word_c[1]
-			if (pos == "JJ"): 
-				if word in dictionary: 
-					parts[int(round(accuracy * dictionary[word]/4.0))] += 1
-				else:
-					parts[int(round(accuracy * 0.5))] += 1
-				num_ct_words += 1
-		if num_ct_words:
-			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): parts[room]/float(num_ct_words) for room in range(accuracy+1)}
-		else:
-			return {feature_prefix+"-"+str(accuracy)+"-"+str(room): "0" for room in range(accuracy+1)}
+#!/usr/bin/env python
+
+#University of Heidelberg
+#Institute of Computational Linguistics
+#Designing Experiments for Machine Learning Tasks
+#Project Sentiment Analysis 2
+#Dominik Both, Denis Orechov
+#2014-2015
+
+#Function container for feature functions.
+
+#Format of a feature building function:
+#Takes:
+#sentence: Tokenised Sentence as list of words OR string "header"
+#dictionary: Sentiment Dictionary format lemma->sentiment
+#Returns:
+#if header: List of features this function creates as a list pair of feature name and feature type.
+#else: Dictionary feature_name->feature_value
+
+#max_sentiment: maximum sentiment of all known words in sentence
+def max_sentiment(sentence = "header", dictionary = {}):
+	feature_prefix = "max_sentiment"
+	if sentence == "header": return [[feature_prefix,"NUMERIC"]]
+	max_sentiment = -1
+	for word_c in sentence:
+		word, pos = word_c
+		if (word in dictionary and dictionary[word] > max_sentiment):
+			max_sentiment = dictionary[word]
+	return {feature_prefix: max_sentiment}
+	
+#min_sentiment: minimum sentiment of all known words in sentence
+def min_sentiment(sentence = "header", dictionary = {}):
+	feature_prefix = "min_sentiment"
+	if sentence == "header": return [[feature_prefix,"NUMERIC"]]
+	min_sentiment = 5
+	for word_c in sentence:
+		word, pos = word_c
+		if (word in dictionary and dictionary[word] < min_sentiment):
+			min_sentiment = dictionary[word]
+	return {feature_prefix: min_sentiment}
