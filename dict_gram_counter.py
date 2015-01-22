@@ -12,10 +12,12 @@
 import json
 
 dictionary = json.loads(open("data/dictionary.json").read())
-n = 0
+n = []
 for lemma in dictionary:
 	t_n = len(lemma.split())
-	if (t_n > n):
-		n = t_n
-print "Max n: "+str(n)
+	if t_n not in n:
+		n[t_n] = 0
+	n[t_n] += 1
+for x in n.keys().sort():
+	print x+": "+
 	

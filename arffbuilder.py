@@ -17,9 +17,11 @@ import json, featurebuilder as f
 sentences = json.loads(open("data/train.json").read())
 dictionary = json.loads(open("data/dictionary.json").read())
 #Set mapping of accuracy
-accuracy = [['"--"', 0], ['"-"', 0.2], ['"0"', 0.4], ['"+"', 0.6], ['"++"', 0.8]]
+#accuracy = [['"--"', 0], ['"-"', 0.2], ['"0"', 0.4], ['"+"', 0.6], ['"++"', 0.8]]
+#accuracy = [['"-"', 0], ['"0"', 0.4], ['"+"', 0.6]]
+accuracy = [['"-"', 0],  ['"+"', 0.5]]
 #choose feature functions (given in featurebuilder.py) to include in arff-file
-features = [f.max_sentiment,f.min_sentiment]
+features = [f.max_sentiment,f.min_sentiment,f.avg_sentiment_no_neutral,f.baseline,f.avg_sentiment_no_neutral_unigrams]
 
 #CODE:
 #inititialise list of features
