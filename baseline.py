@@ -48,10 +48,10 @@ try:
 				eva = "-"
 			if ev >= 0.5:
 				eva = "+"
-			#target is in 0-4, so 2 is parting value.
-			if soll < 2:
+			#target is in 0-1, so 0.5 is parting value.
+			if soll < 0.5:
 				evasoll = "-"
-			if soll >= 2:
+			if soll >= 0.5:
 				evasoll = "+"
 			#for recall and precision save the actual and target class in dictionary
 			if (evasoll+eva not in prr):

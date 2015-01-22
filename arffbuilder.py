@@ -14,8 +14,10 @@
 import json, featurebuilder as f
 
 #SETTINGS:
-sentences = json.loads(open("data/train.txt.json").read())
+sentences = json.loads(open("data/train.json").read())
 dictionary = json.loads(open("data/dictionary.json").read())
+#Set mapping of accuracy
+accuracy = [['"--"', 0], ['"-"', 0.2], ['"0"', 0.4], ['"+"', 0.6], ['"++"', 0.8]]
 #choose feature functions (given in featurebuilder.py) to include in arff-file
 features = [f.max_sentiment,f.min_sentiment]
 
@@ -28,7 +30,7 @@ for f_func in features:
 #sort the features for better readability
 numericals.sort()
 #add sentiment class to header
-numericals += [["sentiment","{0,1,2,3,4}"]]
+numericals += [["sentiment","{"+", ".join([key[0] for key in accuracy])+"}"]]
 #build header
 output = ["%Automatically built ARFF-file"]
 #write used configuration in header
@@ -45,7 +47,11 @@ data = []
 for sentence_c in sentences:
 	feature_row = {}
 	#set target sentiment
-	feature_row["sentiment"], sentence =  sentence_c
+	exact_sentiment, sentence =  sentence_c
+	#get target class
+	for margin in accuracy:
+		if exact_sentiment >= margin[1]:
+			feature_row["sentiment"] = margin[0]
 	#get all features by sending the sentence to all chosen featurebuilders. add returned features to storage
 	for f_func in features:
 		ftc = f_func(sentence,dictionary)
